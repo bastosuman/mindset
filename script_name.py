@@ -29,30 +29,33 @@ def create_commits(start_date, end_date, repo_path, min_commits=1, max_commits=5
         num_commits = random.randint(min_commits, max_commits)
         
         for _ in range(num_commits):
+            # Create a unique filename with timestamp
             timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"auto_commit_{timestamp}.txt"
             
+            # Write to file
             with open(filename, 'w') as f:
                 f.write(f"Automated commit on {current_date}")
             
-            repo.git.add(filename)
-            repo.git.commit(
-                m=f"Auto commit on {current_date}",
-                date=current_date.isoformat()
+            # Explicitly stage the file
+            repo.index.add([filename])
+            
+            # Commit with the specified date
+            repo.index.commit(
+                message=f"Auto commit on {current_date}",
+                commit_date=current_date.isoformat()
             )
         
         current_date += datetime.timedelta(days=1)
 
 def main():
-    # Set this to your actual repository path
-    repo_path = r"C:\Users\basto\Documents\Projects\new"  # Updated to your path
+    repo_path = r"C:\Users\basto\Documents\Projects\new"
     
-    # Check git configuration first
     if not check_git_config():
         return
     
     start_date = datetime.date(2022, 1, 1)
-    end_date = datetime.date(2025, 12, 31)
+    end_date = datetime.date(2024, 12, 31)
     
     create_commits(
         start_date=start_date,
@@ -66,8 +69,7 @@ def main():
     repo.git.push()
 
 if __name__ == "__main__":
-    # Define repo_path here as well for the check
-    repo_path = r"C:\Users\basto\Documents\Projects\new"  # Updated to your path
+    repo_path = r"C:\Users\basto\Documents\Projects\new"
     
     if not os.path.exists(os.path.join(repo_path, '.git')):
         print("Error: This is not a Git repository. Please initialize it with 'git init' first.")
